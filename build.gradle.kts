@@ -5,13 +5,13 @@ import groovy.lang.Closure
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
 plugins {
-    kotlin("jvm") version "1.6.10"
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
-    id("com.github.ben-manes.versions") version "0.41.0"
-    id("com.palantir.git-version") version "0.12.3"
-    id("dev.s7a.gradle.minecraft.server") version "1.2.0"
+    kotlin("jvm") version "2.0.21"
+    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
+    id("com.github.ben-manes.versions") version "0.51.0"
+    id("com.palantir.git-version") version "3.1.0"
+    id("dev.s7a.gradle.minecraft.server") version "3.2.1"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("org.jmailen.kotlinter") version "3.8.0"
+    id("org.jmailen.kotlinter") version "5.0.1"
 }
 
 val gitVersion: Closure<String> by extra
@@ -30,12 +30,16 @@ configurations["implementation"].extendsFrom(shadowImplementation)
 dependencies {
     shadowImplementation(kotlin("stdlib"))
     compileOnly("org.spigotmc:spigot-api:$pluginVersion-R0.1-SNAPSHOT")
+    shadowImplementation(api("com.github.sya-ri:EasySpigotAPI:2.4.0") {
+        exclude(group = "org.spigotmc", module = "spigot-api")
+    })
 }
 
 configure<BukkitPluginDescription> {
     main = "@group@.Main"
     version = gitVersion()
     apiVersion = "1." + pluginVersion.split(".")[1]
+    author = "hirotask"
 }
 
 tasks.withType<ShadowJar> {
@@ -60,9 +64,6 @@ task<LaunchMinecraftServerTask>("buildAndLaunchServer") {
     }
 
     jarUrl.set(JarUrl.Paper(pluginVersion))
-    jarName.set("server.jar")
-    serverDirectory.set(buildDir.resolve("MinecraftServer"))
-    nogui.set(true)
     agreeEula.set(true)
 }
 
